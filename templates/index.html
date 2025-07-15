@@ -1,13 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Stock Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <title>Stock Analyzer</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <h1>Stock Chart</h1>
-    <canvas id="chart" width="600" height="300"></canvas>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <h1>Stock Analyzer</h1>
+
+  <div class="input-container">
+    <label>Stock:
+      <input type="text" id="ticker" placeholder="e.g., AAPL" />
+    </label>
+    <label>Time Period:
+      <input type="text" id="period" placeholder="e.g., 1y,1mo,10d" />
+    </label>
+    <label>Currency:
+      <input type="text" id="currency" placeholder="e.g., MXN,USD" />
+    </label>
+    <button onclick="fetchAll()">Fetch</button>
+  </div>
+
+  <div class="grid-container">
+    <div class="chart-box"></canvas><p>Stock Price History</p><canvas id="chart1"></div>
+    <div class="chart-box"><canvas id="chart2"></canvas><p>RSI graph</p></div>
+    <div class="chart-box"><canvas id="chart3"></canvas><p>Price, SMA10, SMA200</p></div>
+    <div class="chart-box"><canvas id="chart4"></canvas><p>Ln Price History</p></div>
+    <div class="chart-box"><canvas id="chart5"></canvas><p>VIX, SMA10</p></div>
+    <div class="chart-box"><canvas id="chart6"></canvas><p>XLP/XLY ratio</p></div>
+  </div>
+
+  <div class="data-table">
+    <table>
+      <tr><td>Beta:</td><td id="beta"></td></tr>
+      <tr><td>USD/MXN:</td><td id="usdmxn"></td></tr>
+      <tr><td>Correlation:</td><td id="correlation"></td></tr>
+      <tr><td>VIX:</td><td id="vix"></td></tr>
+    </table>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

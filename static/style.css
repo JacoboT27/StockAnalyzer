@@ -1,18 +1,66 @@
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    padding: 20px;
-    background-color: #f2f2f2;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background: #f8f9fa;
+  text-align: center;
 }
 
-input, button {
-    padding: 10px;
-    margin: 10px;
-    font-size: 16px;
+h1 {
+  color: #1a4e63;
 }
 
-canvas {
-    background-color: white;
-    border: 1px solid #ccc;
-    margin-top: 20px;
+.input-container {
+  margin-bottom: 20px;
+}
+
+.input-container label {
+  margin: 0 15px;
+  font-weight: bold;
+}
+
+.input-container input {
+  border: 2px solid green;
+  padding: 5px;
+  margin-left: 5px;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 5px;
+}
+
+.chart-box {
+  background: white;
+  border: 2px solid black;
+  padding: 5px;
+  position: relative;
+}
+
+.chart-box canvas {
+  width: 100% !important;
+  height: 200px !important;
+}
+
+.chart-box p {
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+.data-table {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.data-table table {
+  border-collapse: collapse;
+  width: 300px;
+}
+
+.data-table td {
+  border: 1px solid black;
+  padding: 6px 12px;
+  text-align: left;
 }
