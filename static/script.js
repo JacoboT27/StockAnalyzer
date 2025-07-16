@@ -16,6 +16,8 @@ function fetchAll() {
       document.getElementById("cagr").innerText = data.cagr;
       document.getElementById("usdmxn").innerText = data.usd_mxn;
       document.getElementById("price").innerText = data.price;
+      document.getElementById("vix").innerText = data.recent_vix;
+      document.getElementById("correlation").innerText = data.correlation;
       const ctx1 = document.getElementById("chart1").getContext("2d");
 
       if (chart1) chart1.destroy(); // destroy old chart to avoid overlap
@@ -238,7 +240,7 @@ function fetchAll() {
             x: {
                 ticks: {
                 autoSkip: true,
-                maxTicksLimit: 20
+                maxTicksLimit: 15
                 }
             },
             y: {

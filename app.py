@@ -52,21 +52,23 @@ def stock_api(ticker):
     rsi = rsi.tail(30)
     rsi_dates = rsi.index.strftime('%m-%d').tolist()
 
-    #VIX 6months
+    #VIX 3months
     vix = yf.Ticker('^VIX')
-    vix_hist = vix.history(period='3mo')
+    vix_hist = vix.history(period='5y')
     vix_close = vix_hist['Close'].fillna(method='ffill')
-    vix_close = vix_close.dropna()
+    vix_close_full = vix_close.dropna()
+    vix_close = vix_close_full.tail(90)  # Last 3 months
     vix_dates = vix_close.index.strftime('%Y-%m-%d').tolist()
     #VIX sma5
     vix_sma5 = vix_close.rolling(window=5).mean()
     vix_sma5 = vix_sma5.dropna()
     vix_dates = vix_sma5.index.strftime('%m-%d').tolist()
+    recent_vix = vix.info.get('regularMarketPrice', 0)
 
     #Stock sma200
-    sma200_hist = stock.history(period='2y')
+    sma200_hist = stock.history(period='5y')
     sma200_close = sma200_hist['Close'].fillna(method='ffill')
-    sma200 = sma200_close.rolling(window=200).mean().dropna()
+    sma200 = sma200_close.rolling(window=200).mean().dropna().tail(90)  # Last 3 months
     #Stock sma10
     sma10 = sma200_close.rolling(window=10).mean().dropna()
     #Stock close
@@ -75,16 +77,17 @@ def stock_api(ticker):
     aligned_dates = sma200.index
     sma10_aligned = sma10.loc[aligned_dates]
     close_sma_aligned = close_sma.loc[aligned_dates]
+
     #calculate CAGR with slope of ln
     cagr = np.exp(m*252) - 1
 
     #XLP data
     xlp = yf.Ticker('XLP')
-    xlp_hist = xlp.history(period='20d')
+    xlp_hist = xlp.history(period='100d')
     xlp_close = xlp_hist['Close'].fillna(method='ffill').dropna()
     #XLY data
     xly = yf.Ticker('XLY')
-    xly_hist = xly.history(period='20d')
+    xly_hist = xly.history(period='100d')
     xly_close = xly_hist['Close'].fillna(method='ffill').dropna()
     # Align indices
     common_index = xlp_close.index.intersection(xly_close.index)
@@ -105,9 +108,26 @@ def stock_api(ticker):
     if stock_currency == 'MXN':
         price = stock.info.get('regularMarketPrice', 0)
 
+    #correlation between stock and VIX last 200 days
+    sma200_close.index = sma200_close.index.tz_localize(None)
+    vix_close_full.index = vix_close_full.index.tz_localize(None)
+    common_index = sma200_close.index.intersection(vix_close_full.index).dropna()
+    vix_aligned = vix_close_full.loc[common_index]
+    stock_aligned = sma200_close.loc[common_index]
+    # Drop any remaining NaNs (just in case)
+    vix_aligned = vix_aligned.dropna()
+    stock_aligned = stock_aligned.dropna()
+    # Ensure equal length after dropna
+    min_len = min(len(vix_aligned), len(stock_aligned))
+    vix_aligned = vix_aligned[-min_len:]
+    stock_aligned = stock_aligned[-min_len:]
+    # Final correlation
+    correlation = round(vix_aligned.corr(stock_aligned),3)
+
     return jsonify({
         'beta': beta,
         'cagr': round(cagr * 100, 2),
+        'correlation': correlation,
         'dates': hist.index.strftime('%Y-%m-%d').tolist(),
         'close': close.tolist(),
         'ln': ln_close.tolist(),
@@ -119,13 +139,14 @@ def stock_api(ticker):
         'vix_sma5': vix_sma5.tolist(),
         'dates_vix': vix_dates,
         'sma200': sma200.tolist(),
-        'dates_sma200': aligned_dates.strftime('%Y-%m-%d').tolist(),
+        'dates_sma200': aligned_dates.strftime('%m-%d').tolist(),
         'sma10': sma10_aligned.tolist(),
         'close_sma': close_sma_aligned.tolist(),
         'ratio': ratio.tolist(),
         'dates_ratio': ratio_dates,
         'usd_mxn': round(mxn_price,2),
         'price': round(price, 2),
+        'recent_vix': recent_vix,
     })
 
 if __name__ == '__main__':
