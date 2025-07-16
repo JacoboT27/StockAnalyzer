@@ -283,7 +283,7 @@ function fetchAll() {
             },
             y: {
                 ticks: {
-                stepSize: 0.1
+                stepSize: 0.05
                 }
             }
             }

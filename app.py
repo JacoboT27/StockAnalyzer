@@ -29,7 +29,6 @@ def index():
 @app.route('/api/stock/<ticker>')
 def stock_api(ticker):
     period = request.args.get('period', '1mo')
-    currency = request.args.get('currency', 'USD')
     stock = yf.Ticker(ticker)
     beta = stock.info.get("beta", "N/A")
     hist = stock.history(period=period)
@@ -91,18 +90,19 @@ def stock_api(ticker):
     common_index = xlp_close.index.intersection(xly_close.index)
     xlp_close = xlp_close.loc[common_index]
     xly_close = xly_close.loc[common_index]
-    ratio = xlp_close / xly_close
+    ratio = xly_close / xlp_close
     ratio = ratio.dropna()
     ratio_dates = ratio.index.strftime('%m-%d').tolist()
 
     # USD/MXN current price
     usd_mxn = yf.Ticker('USDMXN=X')
     mxn_price = usd_mxn.info.get('regularMarketPrice', 0)
+    stock_currency = stock.info.get('currency', 'USD')
 
     # Current Price for Mexico
-    if currency == 'USD':
+    if stock_currency == 'USD':
         price = stock.info.get('regularMarketPrice', 0) * mxn_price
-    if currency == 'MXN':
+    if stock_currency == 'MXN':
         price = stock.info.get('regularMarketPrice', 0)
 
     return jsonify({
