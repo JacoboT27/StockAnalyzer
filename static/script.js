@@ -155,6 +155,11 @@ function fetchAll() {
         const ctx5 = document.getElementById("chart5").getContext("2d");
         if (chart5) chart5.destroy();
 
+        const vixLabels = data.dates_vix;
+        const neutral = new Array(vixLabels.length).fill(15);
+        const volatile = new Array(vixLabels.length).fill(20);
+        const panic = new Array(vixLabels.length).fill(25);
+
         chart5 = new Chart(ctx5, {
         type: "line",
         data: {
@@ -163,8 +168,9 @@ function fetchAll() {
             {
                 label: "VIX",
                 data: data.vix,
-                borderColor: "blue",
-                fill: false,
+                borderColor: "orange",
+                backgroundColor: "rgba(234, 109, 14, 0.1)", // light blue fill
+                fill: true,
                 pointRadius: 0,
                 pointHoverRadius: 0
             },
@@ -172,6 +178,33 @@ function fetchAll() {
                 label: "VIX 5-day MA",
                 data: data.vix_sma5,
                 borderColor: "red",
+                borderDash: [5, 5],
+                fill: false,
+                pointRadius: 0,
+                pointHoverRadius: 0
+            },
+            {
+                label: "Neutral (15)",
+                data: neutral,
+                borderColor: "green",
+                borderDash: [5, 5],
+                fill: false,
+                pointRadius: 0,
+                pointHoverRadius: 0
+            },
+            {
+                label: "Volatile (20)",
+                data: volatile,
+                borderColor: "blue",
+                borderDash: [5, 5],
+                fill: false,
+                pointRadius: 0,
+                pointHoverRadius: 0
+            },
+            {
+                label: "Panic (25)",
+                data: panic,
+                borderColor: "purple",
                 borderDash: [5, 5],
                 fill: false,
                 pointRadius: 0,
@@ -186,9 +219,8 @@ function fetchAll() {
             },
             scales: {
             y: {
-                min: 0,
                 ticks: {
-                stepSize: 10
+                stepSize: 5
                 }
             }
             }
@@ -266,6 +298,15 @@ function fetchAll() {
                 borderColor: "red",
                 backgroundColor: "rgba(255, 0, 0, 0.1)", // light red fill
                 fill: true,
+                pointRadius: 0,
+                pointHoverRadius: 0
+            },
+            {
+                label: "sma10",
+                data: data.ratio_sma10,
+                borderColor: "purple",
+                borderDash: [5, 5],
+                fill: false,
                 pointRadius: 0,
                 pointHoverRadius: 0
             }]

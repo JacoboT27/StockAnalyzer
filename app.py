@@ -57,7 +57,7 @@ def stock_api(ticker):
     vix_hist = vix.history(period='5y')
     vix_close = vix_hist['Close'].fillna(method='ffill')
     vix_close_full = vix_close.dropna()
-    vix_close = vix_close_full.tail(90)  # Last 3 months
+    vix_close = vix_close_full.tail(60)  # Last 60 days
     vix_dates = vix_close.index.strftime('%Y-%m-%d').tolist()
     #VIX sma5
     vix_sma5 = vix_close.rolling(window=5).mean()
@@ -95,7 +95,12 @@ def stock_api(ticker):
     xly_close = xly_close.loc[common_index]
     ratio = xly_close / xlp_close
     ratio = ratio.dropna()
-    ratio_dates = ratio.index.strftime('%m-%d').tolist()
+    # SMA10 of the ratio
+    sma10_ratio = ratio.rolling(window=10).mean().dropna()
+    # Align dates for plotting
+    aligned_index = sma10_ratio.index  # to keep the same dates for both lines
+    ratio = ratio.loc[aligned_index]   # align original ratio with sma10
+    ratio_dates = aligned_index.strftime('%m-%d').tolist()
 
     # USD/MXN current price
     usd_mxn = yf.Ticker('USDMXN=X')
@@ -144,6 +149,7 @@ def stock_api(ticker):
         'close_sma': close_sma_aligned.tolist(),
         'ratio': ratio.tolist(),
         'dates_ratio': ratio_dates,
+        'ratio_sma10': sma10_ratio.tolist(),
         'usd_mxn': round(mxn_price,2),
         'price': round(price, 2),
         'recent_vix': recent_vix,
