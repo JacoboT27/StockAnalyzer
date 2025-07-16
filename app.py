@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request
 import yfinance as yf
 import numpy as np
+from datetime import datetime
 
 def compute_rsi(series, period=14):
     delta = series.diff()
@@ -14,6 +15,11 @@ def compute_rsi(series, period=14):
     rsi = 100 - (100 / (1 + rs))
     return rsi
 
+    delta_days = (end_date - start_date).days
+    years = delta_days / 365.25
+    cagr = (end_price / start_price) ** (1 / years) - 1
+    return cagr
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -23,6 +29,7 @@ def index():
 @app.route('/api/stock/<ticker>')
 def stock_api(ticker):
     period = request.args.get('period', '1mo')
+    currency = request.args.get('currency', 'USD')
     stock = yf.Ticker(ticker)
     beta = stock.info.get("beta", "N/A")
     hist = stock.history(period=period)
@@ -35,7 +42,7 @@ def stock_api(ticker):
     m, b = np.polyfit(x, ln_close, 1)
     regression = m * x + b
 
-    #1year for rsi
+    #2mo for rsi
     rsi_hist = stock.history(period='2mo')
     rsi_close = rsi_hist['Close'].fillna(method='ffill')
     # Compute RSI
@@ -69,6 +76,8 @@ def stock_api(ticker):
     aligned_dates = sma200.index
     sma10_aligned = sma10.loc[aligned_dates]
     close_sma_aligned = close_sma.loc[aligned_dates]
+    #calculate CAGR with slope of ln
+    cagr = np.exp(m*252) - 1
 
     #XLP data
     xlp = yf.Ticker('XLP')
@@ -86,8 +95,19 @@ def stock_api(ticker):
     ratio = ratio.dropna()
     ratio_dates = ratio.index.strftime('%m-%d').tolist()
 
+    # USD/MXN current price
+    usd_mxn = yf.Ticker('USDMXN=X')
+    mxn_price = usd_mxn.info.get('regularMarketPrice', 0)
+
+    # Current Price for Mexico
+    if currency == 'USD':
+        price = stock.info.get('regularMarketPrice', 0) * mxn_price
+    if currency == 'MXN':
+        price = stock.info.get('regularMarketPrice', 0)
+
     return jsonify({
         'beta': beta,
+        'cagr': round(cagr * 100, 2),
         'dates': hist.index.strftime('%Y-%m-%d').tolist(),
         'close': close.tolist(),
         'ln': ln_close.tolist(),
@@ -104,6 +124,8 @@ def stock_api(ticker):
         'close_sma': close_sma_aligned.tolist(),
         'ratio': ratio.tolist(),
         'dates_ratio': ratio_dates,
+        'usd_mxn': round(mxn_price,2),
+        'price': round(price, 2),
     })
 
 if __name__ == '__main__':

@@ -13,6 +13,9 @@ function fetchAll() {
     .then(res => res.json())
     .then(data => {
       document.getElementById("beta").innerText = data.beta;
+      document.getElementById("cagr").innerText = data.cagr;
+      document.getElementById("usdmxn").innerText = data.usd_mxn;
+      document.getElementById("price").innerText = data.price;
       const ctx1 = document.getElementById("chart1").getContext("2d");
 
       if (chart1) chart1.destroy(); // destroy old chart to avoid overlap
