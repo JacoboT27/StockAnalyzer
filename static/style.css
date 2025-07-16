@@ -64,7 +64,8 @@ label {
 }
 
 .data-table td {
-  border: 1px solid black;
+  border: 1px solid rgb(255, 255, 255);
   padding: 6px 12px;
   text-align: left;
+  color: #1182ae;
 }

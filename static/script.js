@@ -12,6 +12,7 @@ function fetchAll() {
   fetch(`/api/stock/${ticker}?period=${period}`)
     .then(res => res.json())
     .then(data => {
+      document.getElementById("beta").innerText = data.beta;
       const ctx1 = document.getElementById("chart1").getContext("2d");
 
       if (chart1) chart1.destroy(); // destroy old chart to avoid overlap
@@ -24,7 +25,8 @@ function fetchAll() {
             label: `${ticker} Close Price`,
             data: data.close,
             borderColor: "blue",
-            fill: false,
+            backgroundColor: "rgba(0, 0, 255, 0.1)", // light blue fill
+            fill: true,
             pointRadius: 0,        // <-- hide points
             pointHoverRadius: 0    // <-- hide on hover too
           }]
@@ -56,7 +58,8 @@ function fetchAll() {
                 label: `${ticker} ln Price`,
                 data: data.ln,
                 borderColor: "green",
-                fill: false,
+                backgroundColor: "rgba(0, 255, 0, 0.1)", // light green fill
+                fill: true,
                 pointRadius: 0,
                 pointHoverRadius: 0
             },
@@ -79,7 +82,9 @@ function fetchAll() {
             },
             scales: {
             y: {
-                beginAtZero: true   // 👇 this handles your second request too
+                ticks:{
+                    stepSize: 0.1
+                }
             }
             }
         }
@@ -234,7 +239,6 @@ function fetchAll() {
                 }
             },
             y: {
-                min: 0,
                 ticks: {
                 stepSize: 20
                 }
@@ -255,7 +259,8 @@ function fetchAll() {
                 label: "ratio",
                 data: data.ratio,
                 borderColor: "red",
-                fill: false,
+                backgroundColor: "rgba(255, 0, 0, 0.1)", // light red fill
+                fill: true,
                 pointRadius: 0,
                 pointHoverRadius: 0
             }]

@@ -24,6 +24,7 @@ def index():
 def stock_api(ticker):
     period = request.args.get('period', '1mo')
     stock = yf.Ticker(ticker)
+    beta = stock.info.get("beta", "N/A")
     hist = stock.history(period=period)
 
     close = hist['Close'].fillna(method='ffill')
@@ -43,7 +44,7 @@ def stock_api(ticker):
     rsi = rsi.dropna()
     # last 30 values of RSI
     rsi = rsi.tail(30)
-    rsi_dates = rsi.index.strftime('%Y-%m-%d').tolist()
+    rsi_dates = rsi.index.strftime('%m-%d').tolist()
 
     #VIX 6months
     vix = yf.Ticker('^VIX')
@@ -54,7 +55,7 @@ def stock_api(ticker):
     #VIX sma5
     vix_sma5 = vix_close.rolling(window=5).mean()
     vix_sma5 = vix_sma5.dropna()
-    vix_dates = vix_sma5.index.strftime('%Y-%m-%d').tolist()
+    vix_dates = vix_sma5.index.strftime('%m-%d').tolist()
 
     #Stock sma200
     sma200_hist = stock.history(period='2y')
@@ -83,9 +84,10 @@ def stock_api(ticker):
     xly_close = xly_close.loc[common_index]
     ratio = xlp_close / xly_close
     ratio = ratio.dropna()
-    ratio_dates = ratio.index.strftime('%Y-%m-%d').tolist()
+    ratio_dates = ratio.index.strftime('%m-%d').tolist()
 
     return jsonify({
+        'beta': beta,
         'dates': hist.index.strftime('%Y-%m-%d').tolist(),
         'close': close.tolist(),
         'ln': ln_close.tolist(),
