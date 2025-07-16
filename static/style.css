@@ -1,12 +1,16 @@
 body {
   font-family: Arial, sans-serif;
   padding: 20px;
-  background: #f8f9fa;
+  background: #17171f;
   text-align: center;
 }
 
 h1 {
-  color: #1a4e63;
+  color: #1182ae;
+}
+
+label {
+  color: #ececec ;
 }
 
 .input-container {
@@ -34,7 +38,7 @@ h1 {
 .chart-box {
   background: white;
   border: 2px solid black;
-  padding: 5px;
+  padding: 0px;
   position: relative;
 }
 
