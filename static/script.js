@@ -50,6 +50,7 @@ function fetchAll() {
       });
 
       document.getElementById("ln-equation-label").innerText = data.ln_equation;
+      document.getElementById("r2").innerText = `R²: ${data.r2}`;
       const ctx4 = document.getElementById("chart4").getContext("2d");
 
       if (chart4) chart4.destroy(); // destroy old chart to avoid overlap

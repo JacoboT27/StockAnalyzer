@@ -2,6 +2,7 @@ from flask import Flask, render_template, jsonify, request
 import yfinance as yf
 import numpy as np
 from datetime import datetime
+from sklearn.metrics import r2_score
 
 def compute_rsi(series, period=14):
     delta = series.diff()
@@ -40,6 +41,7 @@ def stock_api(ticker):
     x = np.arange(len(ln_close))
     m, b = np.polyfit(x, ln_close, 1)
     regression = m * x + b
+    r2 = r2_score(ln_close, regression)
 
     #2mo for rsi
     rsi_hist = stock.history(period='2mo')
@@ -138,6 +140,7 @@ def stock_api(ticker):
         'ln': ln_close.tolist(),
         'ln_regression': regression.tolist(),
         'ln_equation': f"y = {m:.4f}x + {b:.4f}",
+        'r2': round(r2, 2),
         'rsi': rsi.tolist(),
         'dates_rsi': rsi_dates,
         'vix': vix_close.tolist(),
