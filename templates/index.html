@@ -33,7 +33,7 @@
         </div>
     </div>
     <div class="chart-box">
-        <p>RSI graph 1 month</p>
+        <p>RSI Graph 1 Month</p>
         <canvas id="chart2"></canvas>
     </div>
     <div class="chart-box">
@@ -45,10 +45,12 @@
         <canvas id="chart5"></canvas>
     </div>
     <div class="chart-box">
-        <p>XLY/XLP ratio</p>
+        <p>XLY/XLP Ratio</p>
         <canvas id="chart6"></canvas>
     </div>
+  </div>
 
+  <div class="grid-container3">
     <div class="data-table">
         <table>
         <tr><td>CAGR:</td><td id="cagr"></td></tr>
@@ -59,11 +61,13 @@
         <tr><td>Correlation:</td><td id="correlation"></td></tr>
         </table>
     </div>
-
+    <div class="dividends">
+      <p>Dividends</p>
+      <p id="dividendRate"></p>
+      <p id="ex_div_date"></p>
+    </div>
   </div>
-
   
-
   <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

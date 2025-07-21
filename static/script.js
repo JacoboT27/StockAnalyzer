@@ -46,6 +46,8 @@ function updateTable(data) {
   document.getElementById("correlation").innerText = data.correlation;
   document.getElementById("ln-equation-label").innerText = data.ln_equation;
   document.getElementById("r2").innerText = `R²: ${data.r2}`;
+  document.getElementById("dividendRate").innerText = `Dividend Rate: ${data.dividendRate}` || "Stock does not pay dividends";
+  document.getElementById("ex_div_date").innerText = data.ex_div_date ? `Ex-Dividend Date: ${data.ex_div_date}` : "No Ex-Dividend Date";
 }
 
 function updateCharts(data, ticker) {

@@ -32,6 +32,8 @@ def stock_api(ticker):
     stock = yf.Ticker(ticker)
     beta = stock.info.get("beta", "N/A")
     hist = stock.history(period=period)
+    dividendRate = stock.info.get('dividendRate', None)
+    ex_div_date = stock.info.get('exDividendDate', None)
 
     close = hist['Close'].fillna(method='ffill')
     ln_close = np.log(close)
@@ -155,6 +157,19 @@ def stock_api(ticker):
         'usd_mxn': round(mxn_price,2),
         'price': round(price, 2),
         'recent_vix': recent_vix,
+        'dividendRate': dividendRate,
+        'ex_div_date': (
+            None if ex_div_date is None
+            else (
+                ex_div_date.strftime('%Y-%m-%d')
+                if hasattr(ex_div_date, 'strftime')
+                else (
+                    np.datetime64(ex_div_date, 's').astype('M8[D]').astype(str)
+                    if isinstance(ex_div_date, int)
+                    else str(ex_div_date)
+                )
+            )
+        )
     })
 
 if __name__ == '__main__':
