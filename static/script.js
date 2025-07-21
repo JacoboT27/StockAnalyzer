@@ -69,16 +69,8 @@ function updateCharts(data, ticker) {
     options: {
       maintainAspectRatio: false,
       responsive: true,
-      plugins: {
-        legend: {
-          display: true,
-          labels: {
-            color: "white",
-            font: { size: 18 }
-          }
-        },
-        title: { display: false }
-      }
+      scales:{x:{ticks:{color: "white"}}, y:{ticks:{color: "white"}}},
+      plugins: {legend: {display: true, labels: {color: "white", font: { size: 18}}}, title: { display: false}}
     }
   });
 
@@ -100,8 +92,8 @@ function updateCharts(data, ticker) {
     options: {
       maintainAspectRatio: false,
       responsive: true,
+      scales:{x:{ticks:{color: "white"}}, y:{min: 0, max: 100, ticks:{color: "white", stepSize: 20}}},
       plugins: {legend: {display: true, labels: {color: "white", font: {size: 18}}}, title: {display: false}},
-      scales: {y: { min: 0, max: 100, ticks: { stepSize: 20 }}}
     }
   });
 
@@ -121,11 +113,8 @@ function updateCharts(data, ticker) {
     options: {
       maintainAspectRatio: false,
       responsive: true,
+      scales:{x:{ticks:{color: "white", autoSkip: true, maxTicksLimit: 15}}, y:{ticks:{color: "white", stepSize: 20}}},
       plugins: {legend: {display: true, labels: {color: "white", font: {size: 18}}}, title: {display: false}},
-      scales: {
-        x: { ticks: { autoSkip: true, maxTicksLimit: 15 } },
-        y: { ticks: { stepSize: 20 } }
-      }
     }
   });
 
@@ -144,8 +133,8 @@ function updateCharts(data, ticker) {
     options: {
      maintainAspectRatio: false,
       responsive: true,
+      scales:{x:{ticks:{color: "white"}}, y:{ticks:{color: "white", stepSize: 0.1}}},
       plugins: {legend: {display: true, labels: {color: "white", font: {size: 18}}}, title: {display: false}},
-      scales: { y: { ticks: { stepSize: 0.1 } } }
     }
   });
 
@@ -170,8 +159,8 @@ function updateCharts(data, ticker) {
     options: {
       maintainAspectRatio: false,
       responsive: true,
+      scales:{x:{ticks:{color: "white"}}, y:{ticks:{color: "white", stepSize: 5}}},
       plugins: {legend: {display: true, labels: {color: "white", font: {size: 18}}}, title: {display: false}},
-      scales: { y: { ticks: { stepSize: 5 } } }
     }
   });
 
@@ -190,11 +179,8 @@ function updateCharts(data, ticker) {
     options: {
       maintainAspectRatio: false,
       responsive: true,
+      scales:{x:{ticks:{color: "white", autoSkip: true}}, y:{ticks:{color: "white", stepSize: 0.05}}},
       plugins: {legend: {display: true, labels: {color: "white", font: {size: 18}}}, title: {display: false}},
-      scales: {
-        x: { ticks: { autoSkip: true } },
-        y: { ticks: { stepSize: 0.05 } }
-      }
     }
   });
 }
