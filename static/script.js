@@ -37,7 +37,7 @@ function fetchAll() {
           }]
         },
         options: {
-          mantainAspectRatio: false,
+          maintainAspectRatio: false,
           responsive: true,
           plugins: {
             legend: {

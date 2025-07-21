@@ -7,6 +7,7 @@ body {
 
 h1 {
   color: #1182ae;
+  margin: 0px;
 }
 
 label {
@@ -17,11 +18,8 @@ p {
   color: #1182ae
 }
 
-canvas {
-  height: 800px;
-}
 .input-container {
-  margin-bottom: 20px;
+  margin: 20px;
 }
 
 .input-container label {
@@ -37,7 +35,7 @@ canvas {
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   margin-bottom: 5px;
 }
@@ -51,7 +49,7 @@ canvas {
 
 .chart-box canvas {
   width: 100% !important;
-  height: 200px !important;
+  height: 400px !important;
 }
 
 .chart-box p {

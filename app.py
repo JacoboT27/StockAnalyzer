@@ -1,7 +1,6 @@
 from flask import Flask, render_template, jsonify, request
 import yfinance as yf
 import numpy as np
-from datetime import datetime
 from sklearn.metrics import r2_score
 
 def compute_rsi(series, period=21):
