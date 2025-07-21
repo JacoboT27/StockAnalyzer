@@ -4,7 +4,7 @@ import numpy as np
 from datetime import datetime
 from sklearn.metrics import r2_score
 
-def compute_rsi(series, period=14):
+def compute_rsi(series, period=21):
     delta = series.diff()
     gain = delta.where(delta > 0, 0)
     loss = -delta.where(delta < 0, 0)
@@ -44,7 +44,7 @@ def stock_api(ticker):
     r2 = r2_score(ln_close, regression)
 
     #2mo for rsi
-    rsi_hist = stock.history(period='2mo')
+    rsi_hist = stock.history(period='4mo')
     rsi_close = rsi_hist['Close'].fillna(method='ffill')
     # Compute RSI
     rsi = compute_rsi(rsi_close)
@@ -59,7 +59,7 @@ def stock_api(ticker):
     vix_hist = vix.history(period='5y')
     vix_close = vix_hist['Close'].fillna(method='ffill')
     vix_close_full = vix_close.dropna()
-    vix_close = vix_close_full.tail(60)  # Last 60 days
+    vix_close = vix_close_full.tail(30)  # Last 30 days
     vix_dates = vix_close.index.strftime('%Y-%m-%d').tolist()
     #VIX sma5
     vix_sma5 = vix_close.rolling(window=5).mean()

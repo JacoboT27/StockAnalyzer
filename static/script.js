@@ -37,10 +37,17 @@ function fetchAll() {
           }]
         },
         options: {
+          mantainAspectRatio: false,
           responsive: true,
           plugins: {
             legend: {
-              display: true
+              display: true,
+              labels:{
+                color: "white",
+                font: {
+                  size: 18
+                }
+              }
             },
             title: {
               display: false
@@ -109,7 +116,7 @@ function fetchAll() {
             labels: rsiLabels,
             datasets: [
             {
-                label: "RSI (14)",
+                label: "RSI (21)",
                 data: data.rsi,
                 borderColor: "purple",
                 fill: false,
@@ -179,7 +186,6 @@ function fetchAll() {
                 label: "VIX 5-day MA",
                 data: data.vix_sma5,
                 borderColor: "red",
-                borderDash: [5, 5],
                 fill: false,
                 pointRadius: 0,
                 pointHoverRadius: 0
