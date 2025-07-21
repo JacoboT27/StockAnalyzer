@@ -98,11 +98,10 @@ function updateCharts(data, ticker) {
       ]
     },
     options: {
+      maintainAspectRatio: false,
       responsive: true,
-      plugins: { legend: { display: true }, title: { display: false } },
-      scales: {
-        y: { min: 0, max: 100, ticks: { stepSize: 20 } }
-      }
+      plugins: {legend: {display: true, labels: {color: "white", font: {size: 18}}}, title: {display: false}},
+      scales: {y: { min: 0, max: 100, ticks: { stepSize: 20 }}}
     }
   });
 
@@ -120,8 +119,9 @@ function updateCharts(data, ticker) {
       ]
     },
     options: {
+      maintainAspectRatio: false,
       responsive: true,
-      plugins: { legend: { display: true }, title: { display: false } },
+      plugins: {legend: {display: true, labels: {color: "white", font: {size: 18}}}, title: {display: false}},
       scales: {
         x: { ticks: { autoSkip: true, maxTicksLimit: 15 } },
         y: { ticks: { stepSize: 20 } }
@@ -142,8 +142,9 @@ function updateCharts(data, ticker) {
       ]
     },
     options: {
+     maintainAspectRatio: false,
       responsive: true,
-      plugins: { legend: { display: true }, title: { display: false } },
+      plugins: {legend: {display: true, labels: {color: "white", font: {size: 18}}}, title: {display: false}},
       scales: { y: { ticks: { stepSize: 0.1 } } }
     }
   });
@@ -167,8 +168,9 @@ function updateCharts(data, ticker) {
       ]
     },
     options: {
+      maintainAspectRatio: false,
       responsive: true,
-      plugins: { legend: { display: true }, title: { display: false } },
+      plugins: {legend: {display: true, labels: {color: "white", font: {size: 18}}}, title: {display: false}},
       scales: { y: { ticks: { stepSize: 5 } } }
     }
   });
@@ -186,8 +188,9 @@ function updateCharts(data, ticker) {
       ]
     },
     options: {
+      maintainAspectRatio: false,
       responsive: true,
-      plugins: { legend: { display: true }, title: { display: false } },
+      plugins: {legend: {display: true, labels: {color: "white", font: {size: 18}}}, title: {display: false}},
       scales: {
         x: { ticks: { autoSkip: true } },
         y: { ticks: { stepSize: 0.05 } }

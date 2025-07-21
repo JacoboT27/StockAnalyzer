@@ -74,3 +74,16 @@ p {
   text-align: left;
   color: #1182ae;
 }
+
+.regression-labels {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* spacing between equation and R² */
+  margin-top: 5px;
+}
+
+.regression-labels p {
+  margin: 0;
+  color: #00bfff; /* or whatever color you're using */
+  font-weight: bold;
+}
