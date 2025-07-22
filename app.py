@@ -34,6 +34,8 @@ def stock_api(ticker):
     hist = stock.history(period=period)
     dividendRate = stock.info.get('dividendRate', None)
     ex_div_date = stock.info.get('exDividendDate', None)
+    dividendTail = stock.dividends.tail(5)
+    payoutratio = stock.info.get("payoutRatio", None)
 
     close = hist['Close'].fillna(method='ffill')
     ln_close = np.log(close)
@@ -155,9 +157,11 @@ def stock_api(ticker):
         'dates_ratio': ratio_dates,
         'ratio_sma10': sma10_ratio.tolist(),
         'usd_mxn': round(mxn_price,2),
+        'stock_currency': stock_currency,
         'price': round(price, 2),
         'recent_vix': recent_vix,
         'dividendRate': dividendRate,
+        'payoutratio': payoutratio,
         'ex_div_date': (
             None if ex_div_date is None
             else (
@@ -169,7 +173,8 @@ def stock_api(ticker):
                     else str(ex_div_date)
                 )
             )
-        )
+        ),
+        'dividendTail': ([{'date': k.strftime('%y-%m-%d'), 'amount': v}for k, v in dividendTail.items()] if not dividendTail.empty else None)
     })
 
 if __name__ == '__main__':

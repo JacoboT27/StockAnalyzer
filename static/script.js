@@ -41,6 +41,7 @@ function fetchAndUpdate(ticker, period) {
 function updateTable(data) {
   document.getElementById("beta").innerText = data.beta;
   document.getElementById("cagr").innerText = data.cagr;
+  document.getElementById("currency").innerText = data.stock_currency;
   document.getElementById("usdmxn").innerText = data.usd_mxn;
   document.getElementById("price").innerText = data.price;
   document.getElementById("vix").innerText = data.recent_vix;
@@ -50,6 +51,21 @@ function updateTable(data) {
 function updateDividends(data, ticker) {
   document.getElementById("dividendRate").innerText = data.dividendRate ? `Dividend Rate: ${data.dividendRate}` : `${ticker} does not pay dividends`;
   document.getElementById("ex_div_date").innerText = data.ex_div_date ? `Ex-Dividend Date: ${data.ex_div_date}` : "No Ex-Dividend Date";
+  document.getElementById("payoutratio").innerText = data.payoutratio ? `Payout Ratio: ${parseFloat(data.payoutratio).toFixed(2)}` : "No Payout Ratio";
+  const tailElement = document.getElementById("dividend-tail");
+  tailElement.innerHTML = "";
+
+  if (data.dividendTail && data.dividendTail.length > 0) {
+    data.dividendTail.forEach(d => {
+      const li = document.createElement("li");
+      li.textContent = `${d.date}: $${parseFloat(d.amount).toFixed(2)}`;
+      tailElement.appendChild(li);
+    });
+  } else {
+    const li = document.createElement("li");
+    li.textContent = "No recent dividends";
+    tailElement.appendChild(li);
+  }
 }
 
 function updateCharts(data, ticker) {
