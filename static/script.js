@@ -31,6 +31,7 @@ function fetchAndUpdate(ticker, period) {
       updateCharts(data, ticker);
       updateTable(data);
       updateDividends(data,ticker);
+      updateFinancials(data);
     })
     .catch(err => {
       console.error("Fetch failed:", err);
@@ -39,13 +40,29 @@ function fetchAndUpdate(ticker, period) {
 }
 
 function updateTable(data) {
-  document.getElementById("beta").innerText = data.beta;
-  document.getElementById("cagr").innerText = data.cagr;
-  document.getElementById("currency").innerText = data.stock_currency;
-  document.getElementById("usdmxn").innerText = data.usd_mxn;
-  document.getElementById("price").innerText = data.price;
-  document.getElementById("vix").innerText = data.recent_vix;
-  document.getElementById("correlation").innerText = data.correlation;
+  document.getElementById("beta").innerText = `Beta: ${data.beta}`;
+  document.getElementById("cagr").innerText = `CAGR: ${data.cagr}`;
+  document.getElementById("currency").innerText = `Currency: ${data.stock_currency}`;
+  document.getElementById("usdmxn").innerText = `USD/MXN: ${data.usd_mxn}`;
+  document.getElementById("price").innerText = `Price: ${data.price}`;
+  document.getElementById("vix").innerText = `VIX: ${data.recent_vix}`;
+  document.getElementById("correlation").innerText = `Correlation: ${data.correlation}`;
+}
+
+function updateFinancials(data) {
+  document.getElementById("pe_ratio").innerText = data.pe_ratio !== 'N/A' ? `P/E Ratio: ${data.pe_ratio}` : "N/A";
+  document.getElementById("market_cap").innerText = data.market_cap !== 'N/A' ? `Market Cap: $${(data.market_cap / 1e9).toFixed(2)}B` : "N/A";
+  document.getElementById("eps").innerText = data.eps !== 'N/A' ? `EPS: $${data.eps}` : "N/A";
+  document.getElementById("pb_ratio").innerText = data.pb_ratio !== 'N/A' ? `P/B Ratio: ${data.pb_ratio}` : "N/A";
+  document.getElementById("ebitda").innerText = data.ebitda !== 'N/A' ? `EBITDA: $${(data.ebitda / 1e6).toFixed(2)}M` : "N/A";
+  document.getElementById("ps_ratio").innerText = data.ps_ratio !== 'N/A' ? `P/S Ratio: ${data.ps_ratio}` : "N/A";
+  const fcfList = document.getElementById("fcf-list");
+  fcfList.innerHTML = "";
+  data.freeCashflowTail.forEach(d => {
+    const li = document.createElement("li");
+    li.innerText = `${d.date}: $${d.amount.toLocaleString()}`;
+    fcfList.appendChild(li);
+  });
 }
 
 function updateDividends(data, ticker) {

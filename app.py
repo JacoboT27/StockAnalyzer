@@ -134,6 +134,23 @@ def stock_api(ticker):
     # Final correlation
     correlation = round(vix_aligned.corr(stock_aligned),3)
 
+    #financials
+    pe_ratio = stock.info.get('trailingPE', 'N/A')
+    market_cap = stock.info.get('marketCap', 'N/A')
+    eps = stock.info.get('trailingEps', 'N/A')
+    pb_ratio = stock.info.get('priceToBook', 'N/A')
+    ebitda = stock.info.get('ebitda', 'N/A')
+    ps_ratio = stock.info.get('priceToSalesTrailing12Months', 'N/A')
+
+    #cash flow
+    cashflow = stock.cashflow  # DataFrame of quarterly cash flows
+
+    # Free cash flow = Operating Cash Flow - Capital Expenditures
+    op_cf = cashflow.loc["Operating Cash Flow"]
+    capex = cashflow.loc["Capital Expenditure"]
+    fcf_series = op_cf + capex  # capex is negative
+    fcf_tail = [{"date": d.strftime("%Y-%m-%d"), "amount": round(fcf_series[d], 2)}for d in fcf_series.dropna().index[-5:]]
+
     return jsonify({
         'beta': beta,
         'cagr': round(cagr * 100, 2),
@@ -174,7 +191,14 @@ def stock_api(ticker):
                 )
             )
         ),
-        'dividendTail': ([{'date': k.strftime('%y-%m-%d'), 'amount': v}for k, v in dividendTail.items()] if not dividendTail.empty else None)
+        'dividendTail': ([{'date': k.strftime('%y-%m-%d'), 'amount': v}for k, v in dividendTail.items()] if not dividendTail.empty else None),
+        'pe_ratio': pe_ratio,
+        'market_cap': market_cap,
+        'eps': eps,
+        'pb_ratio': pb_ratio,
+        'ebitda': ebitda,
+        'ps_ratio': ps_ratio,
+        'freeCashflowTail': fcf_tail
     })
 
 if __name__ == '__main__':

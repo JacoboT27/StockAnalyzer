@@ -62,22 +62,18 @@ label {
   font-size: x-large;
 }
 
-.data-table {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.data-table table {
-  border-collapse: collapse;
-  width: 300px;
-}
-
-.data-table td {
-  border: 1px solid rgb(255, 255, 255);
-  padding: 6px 12px;
-  text-align: left;
+.data-table p {
+  font-size: x-large;
   color: #1182ae;
+  font-weight: bold;
+  margin-top: 0;
+}
+
+.data p {
+  text-align: center;
+  color: #ffffff;
+  font-size: large;
+  font-weight: lighter;
 }
 
 .regression-labels {
@@ -98,6 +94,7 @@ label {
   font-size: x-large;
   color: #1182ae;
   font-weight: bold;
+  margin-top: 0;
 }
 
 .dividend-info p {
@@ -108,6 +105,26 @@ label {
 }
 
 .dividend-list {
+  margin: 0;
+  color: white;
+  padding: 0;
+}
+
+.financials p {
+  color: #1182ae;
+  font-size: x-large;
+  font-weight: bold;
+  margin-top: 0;
+}
+
+.financial-data p {
+  font-weight: lighter;
+  font-size: large;
+  color: #ffffff;
+  text-align: left;
+}
+
+.fcf-list {
   margin: 0;
   color: white;
   padding: 0;

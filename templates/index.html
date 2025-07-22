@@ -52,15 +52,16 @@
 
   <div class="grid-container3">
     <div class="data-table">
-        <table>
-        <tr><td>CAGR:</td><td id="cagr"></td></tr>
-        <tr><td>Beta:</td><td id="beta"></td></tr>
-        <tr><td>Currency:</td><td id="currency"></td></tr>
-        <tr><td>USD/MXN:</td><td id="usdmxn"></td></tr>
-        <tr><td>Price (MXN):</td><td id="price"></td></tr>
-        <tr><td>VIX:</td><td id="vix"></td></tr>
-        <tr><td>Correlation:</td><td id="correlation"></td></tr>
-        </table>
+      <p>Data</p>
+      <div class="data">
+        <p id="cagr"></p>
+        <p id="beta"></p>
+        <p id="currency"></p>
+        <p id="usdmxn"></p>
+        <p id="price"></p>
+        <p id="vix"></p>
+        <p id="correlation"></p>
+      </div>
     </div>
     <div class="dividends">
       <p>Dividends</p>
@@ -69,9 +70,24 @@
         <p id=payoutratio></p>  
         <p id="ex_div_date"></p>
         <div class="grid-container">
-        <p>Latest Dividends</p>
-        <ul id="dividend-tail" class="dividend-list"></ul> 
+          <p>Latest Dividends</p>
+          <ul id="dividend-tail" class="dividend-list"></ul> 
         </div>      
+      </div>
+    </div>
+    <div class="financials">
+      <p>Financials</p>
+      <div class="financial-data">
+        <p id="market_cap"></p>
+        <p id="ebitda"></p>
+        <p id="eps"></p>
+        <div class="grid-container">
+          <p>Free Cash Flow</p>
+          <ul id="fcf-list" class="fcf-list"></ul> 
+        </div> 
+        <p id="pe_ratio"></p>
+        <p id="pb_ratio"></p>
+        <p id="ps_ratio"></p>
       </div>
     </div>
   </div>
