@@ -20,7 +20,7 @@ function fetchAll() {
             updateTable(data);
             });
         }
-    }, 5000); // every 30 seconds
+    }, 5000); // every 5 seconds
   }
 }
 
@@ -30,6 +30,7 @@ function fetchAndUpdate(ticker, period) {
     .then(data => {
       updateCharts(data, ticker);
       updateTable(data);
+      updateDividends(data,ticker);
     })
     .catch(err => {
       console.error("Fetch failed:", err);
@@ -44,9 +45,10 @@ function updateTable(data) {
   document.getElementById("price").innerText = data.price;
   document.getElementById("vix").innerText = data.recent_vix;
   document.getElementById("correlation").innerText = data.correlation;
-  document.getElementById("ln-equation-label").innerText = data.ln_equation;
-  document.getElementById("r2").innerText = `R²: ${data.r2}`;
-  document.getElementById("dividendRate").innerText = `Dividend Rate: ${data.dividendRate}` || "Stock does not pay dividends";
+}
+
+function updateDividends(data, ticker) {
+  document.getElementById("dividendRate").innerText = data.dividendRate ? `Dividend Rate: ${data.dividendRate}` : `${ticker} does not pay dividends`;
   document.getElementById("ex_div_date").innerText = data.ex_div_date ? `Ex-Dividend Date: ${data.ex_div_date}` : "No Ex-Dividend Date";
 }
 
@@ -121,6 +123,8 @@ function updateCharts(data, ticker) {
   });
 
   // chart4 - ln price + regression
+  document.getElementById("ln-equation-label").innerText = data.ln_equation;
+  document.getElementById("r2").innerText = `R²: ${data.r2}`;
   const ctx4 = document.getElementById("chart4").getContext("2d");
   if (chart4) chart4.destroy();
   chart4 = new Chart(ctx4, {

@@ -14,11 +14,6 @@ label {
   color: #ececec ;
 }
 
-p {
-  color: #1182ae;
-  font-size: x-large;
-}
-
 .input-container {
   margin: 20px;
 }
@@ -63,6 +58,8 @@ p {
 .chart-box p {
   margin-top: 5px;
   font-weight: bold;
+  color: #1182ae;
+  font-size: x-large;
 }
 
 .data-table {
@@ -92,12 +89,20 @@ p {
 
 .regression-labels p {
   margin: 0;
-  color: #1182ae; /* or whatever color you're using */
+  color: #ffffff; /* or whatever color you're using */
   font-weight: bold;
+  font-size: large;
 }
 
 .dividends p {
   font-size: x-large;
   color: #1182ae;
   font-weight: bold;
+}
+
+.dividend-info p {
+  text-align: left;
+  color: #ffffff;
+  font-size: large;
+  font-weight: lighter;
 }
