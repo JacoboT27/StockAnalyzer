@@ -129,3 +129,19 @@ label {
   color: white;
   padding: 0;
 }
+
+.checklist h1 {
+  color: #1182ae;
+  text-align: left;
+  margin-left: 80px;
+}
+
+.checklist input[type="checkbox"] {
+  text-align: left;
+  background-color: #222;
+  padding: 15px;
+  border-radius: 10px;
+  color: white;
+  display: inline-block;
+  margin-top: 20px;
+}

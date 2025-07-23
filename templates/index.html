@@ -94,6 +94,13 @@
       </div>
     </div>
   </div>
+  <div class="checklist">
+    <h1>Checklist</h1>
+    <label><input type="checkbox" id="include-dividends" /> Include Dividends</label><br>
+    <label><input type="checkbox" id="adjust-for-inflation" /> Adjust for Inflation</label><br>
+    <label><input type="checkbox" id="use-diluted-eps" /> Use Diluted EPS</label><br>
+    <button onclick="runAnalysis()">Run Analysis</button>
+  </div>
   
   <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
