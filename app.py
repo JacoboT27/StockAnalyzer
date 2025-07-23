@@ -37,7 +37,7 @@ def stock_api(ticker):
     dividendTail = stock.dividends.tail(5)
     payoutratio = stock.info.get("payoutRatio", None)
 
-    close = hist['Close'].fillna(method='ffill')
+    close = hist['Close'].ffill()
     ln_close = np.log(close)
 
     # Linear regression (y = mx + b)
@@ -48,7 +48,7 @@ def stock_api(ticker):
 
     #2mo for rsi
     rsi_hist = stock.history(period='4mo')
-    rsi_close = rsi_hist['Close'].fillna(method='ffill')
+    rsi_close = rsi_hist['Close'].ffill()
     # Compute RSI
     rsi = compute_rsi(rsi_close)
     # Filter out NaN values for RSI
@@ -60,7 +60,7 @@ def stock_api(ticker):
     #VIX 3months
     vix = yf.Ticker('^VIX')
     vix_hist = vix.history(period='5y')
-    vix_close = vix_hist['Close'].fillna(method='ffill')
+    vix_close = vix_hist['Close'].ffill()
     vix_close_full = vix_close.dropna()
     vix_close = vix_close_full.tail(30)  # Last 30 days
     vix_dates = vix_close.index.strftime('%Y-%m-%d').tolist()
@@ -72,12 +72,12 @@ def stock_api(ticker):
 
     #Stock sma200
     sma200_hist = stock.history(period='5y')
-    sma200_close = sma200_hist['Close'].fillna(method='ffill')
+    sma200_close = sma200_hist['Close'].ffill()
     sma200 = sma200_close.rolling(window=200).mean().dropna().tail(90)  # Last 3 months
     #Stock sma10
     sma10 = sma200_close.rolling(window=10).mean().dropna()
     #Stock close
-    close_sma = sma200_hist['Close'].fillna(method='ffill').dropna()
+    close_sma = sma200_hist['Close'].ffill().dropna()
     # Align all series based on SMA200's index
     aligned_dates = sma200.index
     sma10_aligned = sma10.loc[aligned_dates]
@@ -89,11 +89,11 @@ def stock_api(ticker):
     #XLP data
     xlp = yf.Ticker('XLP')
     xlp_hist = xlp.history(period='100d')
-    xlp_close = xlp_hist['Close'].fillna(method='ffill').dropna()
+    xlp_close = xlp_hist['Close'].ffill().dropna()
     #XLY data
     xly = yf.Ticker('XLY')
     xly_hist = xly.history(period='100d')
-    xly_close = xly_hist['Close'].fillna(method='ffill').dropna()
+    xly_close = xly_hist['Close'].ffill().dropna()
     # Align indices
     common_index = xlp_close.index.intersection(xly_close.index)
     xlp_close = xlp_close.loc[common_index]
@@ -137,10 +137,23 @@ def stock_api(ticker):
     #financials
     pe_ratio = stock.info.get('trailingPE', 'N/A')
     market_cap = stock.info.get('marketCap', 'N/A')
-    eps = stock.info.get('trailingEps', 'N/A')
+    eps = stock.income_stmt
     pb_ratio = stock.info.get('priceToBook', 'N/A')
     ebitda = stock.info.get('ebitda', 'N/A')
     ps_ratio = stock.info.get('priceToSalesTrailing12Months', 'N/A')
+
+    eps_series = eps.loc["Diluted EPS"].dropna()
+    # Columns are usually datetime or string, so parse if needed
+    eps = []
+    for d in eps_series.index[-5:]:
+        # Try to parse date string to YYYY-MM-DD
+        date_str = str(d)
+        if "-" in date_str:
+            date_fmt = date_str[:10]
+        else:
+            date_fmt = date_str
+        amount = round(eps_series[d], 2)
+        eps.append({"date": date_fmt, "amount": amount})
 
     #cash flow
     cashflow = stock.cashflow  # DataFrame of quarterly cash flows

@@ -52,7 +52,6 @@ function updateTable(data) {
 function updateFinancials(data) {
   document.getElementById("pe_ratio").innerText = data.pe_ratio !== 'N/A' ? `P/E Ratio: ${data.pe_ratio}` : "N/A";
   document.getElementById("market_cap").innerText = data.market_cap !== 'N/A' ? `Market Cap: $${(data.market_cap / 1e9).toFixed(2)}B` : "N/A";
-  document.getElementById("eps").innerText = data.eps !== 'N/A' ? `EPS: $${data.eps}` : "N/A";
   document.getElementById("pb_ratio").innerText = data.pb_ratio !== 'N/A' ? `P/B Ratio: ${data.pb_ratio}` : "N/A";
   document.getElementById("ebitda").innerText = data.ebitda !== 'N/A' ? `EBITDA: $${(data.ebitda / 1e6).toFixed(2)}M` : "N/A";
   document.getElementById("ps_ratio").innerText = data.ps_ratio !== 'N/A' ? `P/S Ratio: ${data.ps_ratio}` : "N/A";
@@ -62,6 +61,13 @@ function updateFinancials(data) {
     const li = document.createElement("li");
     li.innerText = `${d.date}: $${d.amount.toLocaleString()}`;
     fcfList.appendChild(li);
+  });
+  const epsList = document.getElementById("eps");
+  epsList.innerHTML = "";
+  data.eps.forEach(d => {
+    const li = document.createElement("li");
+    li.innerText = `${d.date}: $${d.amount.toLocaleString()}`;
+    epsList.appendChild(li);
   });
 }
 
