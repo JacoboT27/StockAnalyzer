@@ -32,6 +32,7 @@ function fetchAndUpdate(ticker, period) {
       updateTable(data);
       updateDividends(data,ticker);
       updateFinancials(data);
+      updateResults(data);
     })
     .catch(err => {
       console.error("Fetch failed:", err);
@@ -50,25 +51,32 @@ function updateTable(data) {
 }
 
 function updateFinancials(data) {
-  document.getElementById("pe_ratio").innerText = data.pe_ratio !== 'N/A' ? `P/E Ratio: ${data.pe_ratio}` : "N/A";
-  document.getElementById("market_cap").innerText = data.market_cap !== 'N/A' ? `Market Cap: $${(data.market_cap / 1e9).toFixed(2)}B` : "N/A";
-  document.getElementById("pb_ratio").innerText = data.pb_ratio !== 'N/A' ? `P/B Ratio: ${data.pb_ratio}` : "N/A";
-  document.getElementById("ebitda").innerText = data.ebitda !== 'N/A' ? `EBITDA: $${(data.ebitda / 1e6).toFixed(2)}M` : "N/A";
-  document.getElementById("ps_ratio").innerText = data.ps_ratio !== 'N/A' ? `P/S Ratio: ${data.ps_ratio}` : "N/A";
+  document.getElementById("pe_ratio").innerText = data.pe_ratio !== 'N/A' ? `P/E Ratio: ${data.pe_ratio}` : "No P/E Ratio";
+  document.getElementById("market_cap").innerText = data.market_cap !== 'N/A' ? `Market Cap: $${(data.market_cap / 1e9).toFixed(2)}B` : "No Market Cap";
+  document.getElementById("pb_ratio").innerText = data.pb_ratio !== 'N/A' ? `P/B Ratio: ${data.pb_ratio}` : "No P/B Ratio";
+  document.getElementById("ebitda").innerText = data.ebitda !== 'N/A' ? `EBITDA: $${(data.ebitda / 1e6).toFixed(2)}M` : "No EBITDA Data";
+  document.getElementById("ps_ratio").innerText = data.ps_ratio !== 'N/A' ? `P/S Ratio: ${data.ps_ratio}` : "No P/S Ratio";
+  
   const fcfList = document.getElementById("fcf-list");
   fcfList.innerHTML = "";
-  data.freeCashflowTail.forEach(d => {
+  if (Array.isArray(data.freeCashflowTail) && data.freeCashflowTail.length > 0 && typeof data.freeCashflowTail[0] === "object" && data.freeCashflowTail[0] !== null && "date" in data.freeCashflowTail[0]) {
+    data.freeCashflowTail.forEach(d => {const li = document.createElement("li");li.innerText = `${d.date}: $${d.amount.toLocaleString()}`;fcfList.appendChild(li);});
+  } 
+  else {
     const li = document.createElement("li");
-    li.innerText = `${d.date}: $${d.amount.toLocaleString()}`;
+    li.innerText = "No Free Cash Flow Data";
     fcfList.appendChild(li);
-  });
+  }
+  
   const epsList = document.getElementById("eps");
   epsList.innerHTML = "";
-  data.eps.forEach(d => {
+  if (Array.isArray(data.eps) && data.eps.length > 0 && typeof data.eps[0] === "object" && data.eps[0] !== null && "date" in data.eps[0]) {
+    data.eps.forEach(d => {const li = document.createElement("li");li.innerText = `${d.date}: $${d.amount.toLocaleString()}`;epsList.appendChild(li);});
+  } else {
     const li = document.createElement("li");
-    li.innerText = `${d.date}: $${d.amount.toLocaleString()}`;
+    li.innerText = "No EPS Data";
     epsList.appendChild(li);
-  });
+  }
 }
 
 function updateDividends(data, ticker) {
@@ -228,4 +236,17 @@ function updateCharts(data, ticker) {
       plugins: {legend: {display: true, labels: {color: "white", font: {size: 18}}}, title: {display: false}},
     }
   });
+}
+
+function updateResults(data) {
+  valuation = '';
+  if (data.ln_position == "Below") {
+    valuation = '✅';
+  }
+  else if (data.ln_position == "Above") {
+    valuation = '❌';
+  } else {
+    valuation = '✅';
+  }
+  document.getElementById("ln_position").innerText = `Price is ${data.ln_position} the Regression Line ` + valuation;
 }

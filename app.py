@@ -15,11 +15,6 @@ def compute_rsi(series, period=21):
     rsi = 100 - (100 / (1 + rs))
     return rsi
 
-    delta_days = (end_date - start_date).days
-    years = delta_days / 365.25
-    cagr = (end_price / start_price) ** (1 / years) - 1
-    return cagr
-
 app = Flask(__name__)
 
 @app.route('/')
@@ -142,27 +137,47 @@ def stock_api(ticker):
     ebitda = stock.info.get('ebitda', 'N/A')
     ps_ratio = stock.info.get('priceToSalesTrailing12Months', 'N/A')
 
-    eps_series = eps.loc["Diluted EPS"].dropna()
-    # Columns are usually datetime or string, so parse if needed
-    eps = []
-    for d in eps_series.index[-5:]:
-        # Try to parse date string to YYYY-MM-DD
-        date_str = str(d)
-        if "-" in date_str:
-            date_fmt = date_str[:10]
-        else:
-            date_fmt = date_str
-        amount = round(eps_series[d], 2)
-        eps.append({"date": date_fmt, "amount": amount})
+    #check if eps has 'Diluted EPS' else return 'N/A'
+    if 'Diluted EPS' in eps.index:
+        eps_series = eps.loc["Diluted EPS"].dropna()
+
+        # Columns are usually datetime or string, so parse if needed
+        eps = []
+        for d in eps_series.index[-5:]:
+            # Try to parse date string to YYYY-MM-DD
+            date_str = str(d)
+            if "-" in date_str:
+                date_fmt = date_str[:10]
+            else:
+                date_fmt = date_str
+            amount = round(eps_series[d], 2)
+            eps.append({"date": date_fmt, "amount": amount})
+    # If no 'Diluted EPS', return empty list
+    else:
+        eps = ['No EPS Data']
 
     #cash flow
     cashflow = stock.cashflow  # DataFrame of quarterly cash flows
 
-    # Free cash flow = Operating Cash Flow - Capital Expenditures
-    op_cf = cashflow.loc["Operating Cash Flow"]
-    capex = cashflow.loc["Capital Expenditure"]
-    fcf_series = op_cf + capex  # capex is negative
-    fcf_tail = [{"date": d.strftime("%Y-%m-%d"), "amount": round(fcf_series[d], 2)}for d in fcf_series.dropna().index[-5:]]
+    if 'Operating Cash Flow' in cashflow.index and 'Capital Expenditure' in cashflow.index:
+        # Free cash flow = Operating Cash Flow - Capital Expenditures
+        op_cf = cashflow.loc["Operating Cash Flow"]
+        capex = cashflow.loc["Capital Expenditure"]
+        fcf_series = op_cf + capex  # capex is negative
+        fcf_tail = [{"date": d.strftime("%Y-%m-%d"), "amount": round(fcf_series[d], 2)}for d in fcf_series.dropna().index[-5:]]
+    else:
+        fcf_tail = ['No Free Cash Flow Data']
+
+    #results
+    current_ln_price = ln_close.iloc[-1]
+    predicted_ln_price = m * x[-1] + b
+
+    if current_ln_price > predicted_ln_price + 0.01:  # Allow a small margin for floating point precision
+        trend_position = "Above"
+    elif current_ln_price < predicted_ln_price - 0.01:
+        trend_position = "Below"
+    else:
+        trend_position = "On"
 
     return jsonify({
         'beta': beta,
@@ -211,7 +226,9 @@ def stock_api(ticker):
         'pb_ratio': pb_ratio,
         'ebitda': ebitda,
         'ps_ratio': ps_ratio,
-        'freeCashflowTail': fcf_tail
+        'freeCashflowTail': fcf_tail,
+        'ln_position': trend_position,
+        
     })
 
 if __name__ == '__main__':

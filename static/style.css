@@ -130,18 +130,30 @@ label {
   padding: 0;
 }
 
-.checklist h1 {
-  color: #1182ae;
+.checklist {
+  margin-left: 80px; /* or any left offset you want */
   text-align: left;
-  margin-left: 80px;
 }
 
-.checklist input[type="checkbox"] {
-  text-align: left;
-  background-color: #222;
-  padding: 15px;
-  border-radius: 10px;
-  color: white;
-  display: inline-block;
-  margin-top: 20px;
+.checklist h1 {
+  display: flex;
+  align-items: center;
 }
+
+.checklist label {
+  display: block;
+  margin: 10px 0;
+  color: white;
+  font-size: 20px;
+}
+
+.checklist button {
+  margin-left: 25px;
+}
+
+.results {
+  color:#ffffff;
+  text-align: left;
+  font-size: 20px;
+}
+

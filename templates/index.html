@@ -95,11 +95,13 @@
     </div>
   </div>
   <div class="checklist">
-    <h1>Checklist</h1>
-    <label><input type="checkbox" id="include-dividends" /> Include Dividends</label><br>
-    <label><input type="checkbox" id="adjust-for-inflation" /> Adjust for Inflation</label><br>
-    <label><input type="checkbox" id="use-diluted-eps" /> Use Diluted EPS</label><br>
-    <button onclick="runAnalysis()">Run Analysis</button>
+    <h1>Results <button onclick="runAnalysis()">Run Analysis</button></h1>
+    <div class="grid-container3">
+      <p class="results" id="ln_position"></p>
+      <label><input type="checkbox" id="include-dividends" /> Include Dividends</label><br>
+      <label><input type="checkbox" id="adjust-for-inflation" /> Adjust for Inflation</label>
+      <label><input type="checkbox" id="use-diluted-eps" /> Use Diluted EPS</label>
+    </div>
   </div>
   
   <script src="{{ url_for('static', filename='script.js') }}"></script>
