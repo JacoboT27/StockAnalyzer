@@ -256,5 +256,22 @@ function updateResults(data) {
   else {
     document.getElementById("slope_sign").innerText = `Regression Slope is Negative ❌`;
   }
+
+  if (data.r2 > 0.75) {
+    document.getElementById("r2_value").innerText = `R² is High ✅`;
+  }
+  else if (data.r2 > 0.45) {
+    document.getElementById("r2_value").innerText = `R² is Medium ⚠️`;
+  } else {
+    document.getElementById("r2_value").innerText = `R² is Low ❌`;
+  }
+
+  if (data.rsi[data.rsi.length - 1] < 30) {
+    document.getElementById("rsi_value").innerText = `RSI is Oversold ✅`;
+  } else if (data.rsi[data.rsi.length - 1] > 70) {
+    document.getElementById("rsi_value").innerText = `RSI is Overbought ❌`;
+  } else {
+    document.getElementById("rsi_value").innerText = `RSI is Neutral ⚠️`;
+  }
   
 }
