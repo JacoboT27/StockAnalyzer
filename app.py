@@ -188,7 +188,7 @@ def stock_api(ticker):
         'ln': ln_close.tolist(),
         'ln_regression': regression.tolist(),
         'ln_equation': f"y = {m:.4f}x + {b:.4f}",
-        'slope': round(m, 3),
+        'slope': m,
         'r2': round(r2, 2),
         'rsi': rsi.tolist(),
         'dates_rsi': rsi_dates,

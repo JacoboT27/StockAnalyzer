@@ -249,4 +249,12 @@ function updateResults(data) {
     valuation = '✅';
   }
   document.getElementById("ln_position").innerText = `Price is ${data.ln_position} the Regression Line ` + valuation;
+
+  if (data.slope > 0) {
+    document.getElementById("slope_sign").innerText = `Regression Slope is Positive ✅`;
+  }
+  else {
+    document.getElementById("slope_sign").innerText = `Regression Slope is Negative ❌`;
+  }
+  
 }
