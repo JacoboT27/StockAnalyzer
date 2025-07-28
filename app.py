@@ -65,18 +65,47 @@ def stock_api(ticker):
     vix_dates = vix_sma5.index.strftime('%m-%d').tolist()
     recent_vix = vix.info.get('regularMarketPrice', 0)
 
+    if (vix_close.iloc[-1] < 15):
+        vix_state = "Low VIX - Market Calm ✅"
+    elif (vix_close.iloc[-1] < 20):
+        vix_state = "Moderate VIX - Market Stable ✅"
+    elif (vix_close.iloc[-1] < 30):
+        vix_state = "High VIX - Market Volatile ⚠️"
+    else:
+        vix_state = "Extreme VIX - Market Panic ❌"
+
+    if (vix_close.iloc[-1] >= vix_sma5.iloc[-1]):
+        vix_trend = 'VIX Rising - Go to Safe Sectors ⚠️'
+    else:
+        vix_trend = 'VIX Falling - Risk On ✅'
+
     #Stock sma200
     sma200_hist = stock.history(period='5y')
     sma200_close = sma200_hist['Close'].ffill()
     sma200 = sma200_close.rolling(window=200).mean().dropna().tail(90)  # Last 3 months
-    #Stock sma10
-    sma10 = sma200_close.rolling(window=10).mean().dropna()
+    #Stock sma20
+    sma20 = sma200_close.rolling(window=20).mean().dropna()
     #Stock close
     close_sma = sma200_hist['Close'].ffill().dropna()
     # Align all series based on SMA200's index
     aligned_dates = sma200.index
-    sma10_aligned = sma10.loc[aligned_dates]
+    sma20_aligned = sma20.loc[aligned_dates]
     close_sma_aligned = close_sma.loc[aligned_dates]
+    
+    if (close.iloc[-1] > sma20_aligned.iloc[-1]) and (close.iloc[-1] > sma200.iloc[-1]):
+        price_trend = " Strong Uptrend ✅"
+    elif (close.iloc[-1] > sma20_aligned.iloc[-1]) and (sma20_aligned.iloc[-1] < sma200.iloc[-1]):
+        price_trend = "Long-Term Downtrend ❌"
+    elif (close.iloc[-1] < sma20_aligned.iloc[-1]) and (sma20_aligned.iloc[-1] > sma200.iloc[-1]):
+        price_trend = "Good Entry Point ✅"
+    elif (close.iloc[-1] < sma20_aligned.iloc[-1]) and (sma20_aligned.iloc[-1] < sma200.iloc[-1]):
+        price_trend = "Strong Downtrend ❌"
+    elif (sma20_aligned.iloc[-1] > sma200.iloc[-1]) and (close.iloc[-1] < sma20_aligned.iloc[-1]):
+        price_trend = "Short-Term Downtrend ⚠️"
+    elif (sma20_aligned.iloc[-1] < sma200.iloc[-1]) and (close.iloc[-1] > sma20_aligned.iloc[-1]):
+        price_trend = "Short-Term Uptrend ⚠️"
+    else:
+        price_trend = "No Clear Trend ⚠️"
 
     #calculate CAGR with slope of ln
     cagr = np.exp(m*252) - 1
@@ -194,10 +223,12 @@ def stock_api(ticker):
         'dates_rsi': rsi_dates,
         'vix': vix_close.tolist(),
         'vix_sma5': vix_sma5.tolist(),
+        'vix_state': vix_state,
+        'vix_trend': vix_trend,
         'dates_vix': vix_dates,
         'sma200': sma200.tolist(),
         'dates_sma200': aligned_dates.strftime('%m-%d').tolist(),
-        'sma10': sma10_aligned.tolist(),
+        'sma20': sma20_aligned.tolist(),
         'close_sma': close_sma_aligned.tolist(),
         'ratio': ratio.tolist(),
         'dates_ratio': ratio_dates,
@@ -229,7 +260,7 @@ def stock_api(ticker):
         'ps_ratio': ps_ratio,
         'freeCashflowTail': fcf_tail,
         'ln_position': trend_position,
-        
+        'price_trend': price_trend,
     })
 
 if __name__ == '__main__':

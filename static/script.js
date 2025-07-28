@@ -157,7 +157,7 @@ function updateCharts(data, ticker) {
       labels: data.dates_sma200,
       datasets: [
         { label: "sma200", data: data.sma200, borderColor: "green", borderDash: [5, 5], fill: false, pointRadius: 0 },
-        { label: "sma10", data: data.sma10, borderColor: "orange", borderDash: [5, 5], fill: false, pointRadius: 0 },
+        { label: "sma20", data: data.sma20, borderColor: "orange", borderDash: [5, 5], fill: false, pointRadius: 0 },
         { label: "close", data: data.close_sma, borderColor: "blue", fill: false, pointRadius: 0 }
       ]
     },
@@ -239,6 +239,9 @@ function updateCharts(data, ticker) {
 }
 
 function updateResults(data) {
+  document.getElementById("price_trend").innerText = data.price_trend;
+  document.getElementById("vix_state").innerText = data.vix_state;
+  document.getElementById("vix_trend").innerText = data.vix_trend;
   valuation = '';
   if (data.ln_position == "Below") {
     valuation = '✅';
