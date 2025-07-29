@@ -2,18 +2,7 @@ from flask import Flask, render_template, jsonify, request
 import yfinance as yf
 import numpy as np
 from sklearn.metrics import r2_score
-
-def compute_rsi(series, period=21):
-    delta = series.diff()
-    gain = delta.where(delta > 0, 0)
-    loss = -delta.where(delta < 0, 0)
-
-    avg_gain = gain.rolling(window=period).mean()
-    avg_loss = loss.rolling(window=period).mean()
-
-    rs = avg_gain / avg_loss
-    rsi = 100 - (100 / (1 + rs))
-    return rsi
+from functions import compute_rsi, getDividendInfo, getStockInfo
 
 app = Flask(__name__)
 
@@ -23,14 +12,10 @@ def index():
 
 @app.route('/api/stock/<ticker>')
 def stock_api(ticker):
-    period = request.args.get('period', '1mo')
-    stock = yf.Ticker(ticker)
-    beta = stock.info.get("beta", "N/A")
-    hist = stock.history(period=period)
-    dividendRate = stock.info.get('dividendRate', None)
-    ex_div_date = stock.info.get('exDividendDate', None)
-    dividendTail = stock.dividends.tail(5)
-    payoutratio = stock.info.get("payoutRatio", None)
+
+    period = request.args.get('period', '1y') #1 year is default period
+    stock, beta, hist = getStockInfo(ticker, period)
+    dividendRate, ex_div_date, dividendTail, payoutratio = getDividendInfo(stock)
 
     close = hist['Close'].ffill()
     ln_close = np.log(close)
