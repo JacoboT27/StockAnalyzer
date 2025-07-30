@@ -92,3 +92,73 @@ def getPriceMXN(stock):
     if stock_currency == 'MXN':
         price = stock.info.get('regularMarketPrice', 0)
     return mxn_price, stock_currency, price
+
+def getCorrelationVIX(close_sma, vix_close_full):
+    close_sma.index = close_sma.index.tz_localize(None)
+    vix_close_full.index = vix_close_full.index.tz_localize(None)
+    common_index = close_sma.index.intersection(vix_close_full.index).dropna()
+    vix_aligned = vix_close_full.loc[common_index]
+    stock_aligned = close_sma.loc[common_index]
+    # Drop any remaining NaNs (just in case)
+    vix_aligned = vix_aligned.dropna()
+    stock_aligned = stock_aligned.dropna()
+    # Ensure equal length after dropna
+    min_len = min(len(vix_aligned), len(stock_aligned))
+    vix_aligned = vix_aligned[-min_len:]
+    stock_aligned = stock_aligned[-min_len:]
+    # Final correlation
+    correlation = round(vix_aligned.corr(stock_aligned),3)
+    return correlation
+
+def getEPS(stock):
+    eps = stock.income_stmt                                                             # EPS
+    #check if eps has 'Diluted EPS' else return 'N/A'
+    if 'Diluted EPS' in eps.index:
+        eps_series = eps.loc["Diluted EPS"].dropna()
+
+        # Columns are usually datetime or string, so parse if needed
+        eps = []
+        for d in eps_series.index[-5:]:
+            # Try to parse date string to YYYY-MM-DD
+            date_str = str(d)
+            if "-" in date_str:
+                date_fmt = date_str[:10]
+            else:
+                date_fmt = date_str
+            amount = round(eps_series[d], 2)
+            eps.append({"date": date_fmt, "amount": amount})
+    # If no 'Diluted EPS', return empty list
+    else:
+        eps = ['No EPS Data']
+    return eps
+
+def getCashflow(stock):
+    cashflow = stock.cashflow  # DataFrame of quarterly cash flows
+
+    if 'Operating Cash Flow' in cashflow.index and 'Capital Expenditure' in cashflow.index:
+        # Free cash flow = Operating Cash Flow - Capital Expenditures
+        op_cf = cashflow.loc["Operating Cash Flow"]
+        capex = cashflow.loc["Capital Expenditure"]
+        fcf_series = op_cf + capex  # capex is negative
+        fcf_tail = [{"date": d.strftime("%Y-%m-%d"), "amount": round(fcf_series[d], 2)}for d in fcf_series.dropna().index[-5:]]
+    else:
+        fcf_tail = ['No Free Cash Flow Data']
+    return fcf_tail
+
+def getTrendPosition(ln_close,m,x,b):
+    current_ln_price = ln_close.iloc[-1]                                                # Current Ln Price
+    predicted_ln_price = m * x[-1] + b                                                  # Current Predicted Price
+    if current_ln_price > predicted_ln_price + 0.01: 
+        trend_position = "Above"
+    elif current_ln_price < predicted_ln_price - 0.01:
+        trend_position = "Below"
+    else:
+        trend_position = "On"
+    return trend_position
+
+def getRatioTrend(ratio, sma50_ratio):
+    if ratio.iloc[-1] < sma50_ratio.iloc[-1]:
+        ratio_trend = 'Risk OFF Defensive Market ⚠️'
+    else:
+        ratio_trend = 'Risk ON Growth Market ✅'
+    return ratio_trend

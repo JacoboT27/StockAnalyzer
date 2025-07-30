@@ -226,7 +226,7 @@ function updateCharts(data, ticker) {
       labels: data.dates_ratio,
       datasets: [
         { label: "ratio", data: data.ratio, borderColor: "red", backgroundColor: "rgba(255, 0, 0, 0.1)", fill: true, pointRadius: 0 },
-        { label: "sma10", data: data.ratio_sma10, borderColor: "purple", borderDash: [5, 5], fill: false, pointRadius: 0 }
+        { label: "sma50", data: data.ratio_sma50, borderColor: "purple", borderDash: [5, 5], fill: false, pointRadius: 0 }
       ]
     },
     options: {
@@ -242,6 +242,7 @@ function updateResults(data) {
   document.getElementById("price_trend").innerText = data.price_trend;
   document.getElementById("vix_state").innerText = data.vix_state;
   document.getElementById("vix_trend").innerText = data.vix_trend;
+  document.getElementById("ratio_trend").innerText = data.ratio_trend;
   valuation = '';
   if (data.ln_position == "Below") {
     valuation = '✅';

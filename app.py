@@ -1,8 +1,8 @@
 from flask import Flask, render_template, jsonify, request
 import yfinance as yf
 import numpy as np
-from functions import compute_rsi, getDividendInfo, getStockInfo, linearRegression, getVixData, getSMA, SMATrend, getPriceMXN
-
+from functions import compute_rsi, getDividendInfo, getStockInfo, linearRegression, getVixData, getSMA, SMATrend, getPriceMXN, getCorrelationVIX, getEPS, getCashflow
+from functions import getTrendPosition, getRatioTrend
 app = Flask(__name__)
 
 @app.route('/')
@@ -39,7 +39,6 @@ def stock_api(ticker):
     aligned_dates = sma200.index                                                        # Aligned Dates Inedx
     sma20_aligned = sma20.loc[aligned_dates]                                            # Align SMA20 Dates
     close_sma_aligned = close_sma.loc[aligned_dates]                                    # Align Close Data
-    price_trend = SMATrend(close, sma20_aligned, sma200)                                # Price Trend Based on SMA
 
     # --- VIX Data (CHART 5) ---    
     vix_close, vix_sma5, vix_dates, vix_state, vix_trend, recent_vix, vix_close_full = getVixData() # VIX Data
@@ -55,81 +54,29 @@ def stock_api(ticker):
     xlp_close = xlp_close.loc[common_index]                                             # Align XLP
     xly_close = xly_close.loc[common_index]                                             # Align XLY
     ratio = (xly_close / xlp_close).dropna()                                            # Ratio
-    sma10_ratio = ratio.rolling(window=10).mean().dropna()                              # Ratio SMA10 
-    aligned_index = sma10_ratio.index                                                   # Aligned Index
+    sma50_ratio = ratio.rolling(window=50).mean().dropna()                              # Ratio SMA50 
+    aligned_index = sma50_ratio.index                                                   # Aligned Index
     ratio = ratio.loc[aligned_index]                                                    # Aligned Ratio
     ratio_dates = aligned_index.strftime('%m-%d').tolist()                              # Aligned Dates
     
     # --- Data Section ---
     cagr = np.exp(m*252) - 1                                                            # CAGR
-    mxn_price, stock_currency, price = getPriceMXN(stock)                               # Exchange and Price in MXN
+    mxn_price, stock_currency, price = getPriceMXN(stock)                               # Exchange and Price in MXN 
+    correlation = getCorrelationVIX(close_sma,vix_close_full)                           # Correlation with VIX
+    pe_ratio = stock.info.get('trailingPE', 'N/A')                                      # P/E Ratio
+    market_cap = stock.info.get('marketCap', 'N/A')                                     # Market Cap
+    eps = getEPS(stock)                                                                 # EPS
+    pb_ratio = stock.info.get('priceToBook', 'N/A')                                     # P/B Ratio
+    ebitda = stock.info.get('ebitda', 'N/A')                                            # EBITDA
+    ps_ratio = stock.info.get('priceToSalesTrailing12Months', 'N/A')                    # P/S Ratio
+    fcf_tail = getCashflow(stock)                                                       # Free Cashflow   
     
-    # Correlation
-    close_sma.index = close_sma.index.tz_localize(None)
-    vix_close_full.index = vix_close_full.index.tz_localize(None)
-    common_index = close_sma.index.intersection(vix_close_full.index).dropna()
-    vix_aligned = vix_close_full.loc[common_index]
-    stock_aligned = close_sma.loc[common_index]
-    # Drop any remaining NaNs (just in case)
-    vix_aligned = vix_aligned.dropna()
-    stock_aligned = stock_aligned.dropna()
-    # Ensure equal length after dropna
-    min_len = min(len(vix_aligned), len(stock_aligned))
-    vix_aligned = vix_aligned[-min_len:]
-    stock_aligned = stock_aligned[-min_len:]
-    # Final correlation
-    correlation = round(vix_aligned.corr(stock_aligned),3)
+    # --- Result Section ---
+    trend_position = getTrendPosition(ln_close, m, x, b)                                # Trend Postion of Stock
+    price_trend = SMATrend(close, sma20_aligned, sma200)                                # Price Trend Based on SMA
+    ratio_trend = getRatioTrend(ratio,sma50_ratio)                                      # Trend of XLY/XLP Ratio
 
-    #financials
-    pe_ratio = stock.info.get('trailingPE', 'N/A')
-    market_cap = stock.info.get('marketCap', 'N/A')
-    eps = stock.income_stmt
-    pb_ratio = stock.info.get('priceToBook', 'N/A')
-    ebitda = stock.info.get('ebitda', 'N/A')
-    ps_ratio = stock.info.get('priceToSalesTrailing12Months', 'N/A')
-
-    #check if eps has 'Diluted EPS' else return 'N/A'
-    if 'Diluted EPS' in eps.index:
-        eps_series = eps.loc["Diluted EPS"].dropna()
-
-        # Columns are usually datetime or string, so parse if needed
-        eps = []
-        for d in eps_series.index[-5:]:
-            # Try to parse date string to YYYY-MM-DD
-            date_str = str(d)
-            if "-" in date_str:
-                date_fmt = date_str[:10]
-            else:
-                date_fmt = date_str
-            amount = round(eps_series[d], 2)
-            eps.append({"date": date_fmt, "amount": amount})
-    # If no 'Diluted EPS', return empty list
-    else:
-        eps = ['No EPS Data']
-
-    #cash flow
-    cashflow = stock.cashflow  # DataFrame of quarterly cash flows
-
-    if 'Operating Cash Flow' in cashflow.index and 'Capital Expenditure' in cashflow.index:
-        # Free cash flow = Operating Cash Flow - Capital Expenditures
-        op_cf = cashflow.loc["Operating Cash Flow"]
-        capex = cashflow.loc["Capital Expenditure"]
-        fcf_series = op_cf + capex  # capex is negative
-        fcf_tail = [{"date": d.strftime("%Y-%m-%d"), "amount": round(fcf_series[d], 2)}for d in fcf_series.dropna().index[-5:]]
-    else:
-        fcf_tail = ['No Free Cash Flow Data']
-
-    #results
-    current_ln_price = ln_close.iloc[-1]
-    predicted_ln_price = m * x[-1] + b
-
-    if current_ln_price > predicted_ln_price + 0.01:  # Allow a small margin for floating point precision
-        trend_position = "Above"
-    elif current_ln_price < predicted_ln_price - 0.01:
-        trend_position = "Below"
-    else:
-        trend_position = "On"
-
+    # --- Return JSON ---
     return jsonify({
         'beta': beta,
         'cagr': round(cagr * 100, 2),
@@ -154,7 +101,7 @@ def stock_api(ticker):
         'close_sma': close_sma_aligned.tolist(),
         'ratio': ratio.tolist(),
         'dates_ratio': ratio_dates,
-        'ratio_sma10': sma10_ratio.tolist(),
+        'ratio_sma50': sma50_ratio.tolist(),
         'usd_mxn': round(mxn_price,2),
         'stock_currency': stock_currency,
         'price': round(price, 2),
@@ -183,6 +130,7 @@ def stock_api(ticker):
         'freeCashflowTail': fcf_tail,
         'ln_position': trend_position,
         'price_trend': price_trend,
+        'ratio_trend': ratio_trend
     })
 
 if __name__ == '__main__':
