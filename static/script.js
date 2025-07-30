@@ -1,4 +1,4 @@
-let chart1 = null, chart2 = null, chart3 = null, chart4 = null, chart5 = null, chart6 = null;
+let chart1 = null, chart2 = null, chart3 = null, chart4 = null, chart5 = null, chart6 = null, chart7 = null;
 let lastTicker = "";
 let lastPeriod = "";
 let refreshIntervalStarted = false;
@@ -236,6 +236,28 @@ function updateCharts(data, ticker) {
       plugins: {legend: {display: true, labels: {color: "white", font: {size: 18}}}, title: {display: false}},
     }
   });
+
+  // chart 7 - USD/MXN 
+  const ctx7 = document.getElementById("chart7").getContext("2d");
+  if (chart7) chart7.destroy();
+  chart7 = new Chart(ctx7, {
+    type: "line",
+    data: {
+      labels: data.dates_USDMXN,
+      datasets: [
+        { label: "price", data: data.USDMXN_close, borderColor: "blue", pointRadius: 0 },
+        { label: "upper band", data: data.USMXN_UpBand, borderColor: "red", pointRadius: 0},
+        { label: "lower band", data: data.USMXN_LowBand, borderColor: "red", pointRadius: 0},
+        { label: "sma50", data: data.USMXN_sma50, borderColor: "black", pointRadius: 0}
+      ]
+    },
+    options: {
+      maintainAspectRatio: false,
+      responsive: true,
+      scales:{x:{ticks:{color: "white", autoSkip: true, maxTicksLimit: 15}}, y:{ticks:{color: "white", stepSize: 0.05}}},
+      plugins: {legend: {display: true, labels: {color: "white", font: {size: 18}}}, title: {display: false}},
+    }
+  });
 }
 
 function updateResults(data) {
@@ -246,7 +268,8 @@ function updateResults(data) {
   document.getElementById("dividend_trend").innerText = data.dividend_trend;
   document.getElementById("eps_trend").innerText = data.eps_trend;
   document.getElementById("fcf_trend").innerText = data.fcf_trend;
-  
+  document.getElementById("mxn_trend").innerText = data.mxn_trend;
+
   valuation = '';
   if (data.ln_position == "Below") {
     valuation = '✅';

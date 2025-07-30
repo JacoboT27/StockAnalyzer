@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify, request
 import yfinance as yf
 import numpy as np
 from functions import compute_rsi, getDividendInfo, getStockInfo, linearRegression, getVixData, getSMA, SMATrend, getPriceMXN, getCorrelationVIX, getEPS, getCashflow
-from functions import getTrendPosition, getRatioTrend, getDividendTrend, getTrend
+from functions import getTrendPosition, getRatioTrend, getDividendTrend, getTrend, getUSDMXNdata, getMXNTrend
 app = Flask(__name__)
 
 @app.route('/')
@@ -58,6 +58,9 @@ def stock_api(ticker):
     aligned_index = sma50_ratio.index                                                   # Aligned Index
     ratio = ratio.loc[aligned_index]                                                    # Aligned Ratio
     ratio_dates = aligned_index.strftime('%m-%d').tolist()                              # Aligned Dates
+
+    # --- USD/MXN Data (CHART 7) ---
+    USDMXN_close, dates_USDMXN, USMXN_UpBand, USMXN_LowBand,USMXN_sma50 = getUSDMXNdata()                     # Get USD/MXN data
     
     # --- Data Section ---
     cagr = np.exp(m*252) - 1                                                            # CAGR
@@ -76,8 +79,9 @@ def stock_api(ticker):
     price_trend = SMATrend(close, sma20_aligned, sma200)                                # Price Trend Based on SMA
     ratio_trend = getRatioTrend(ratio,sma50_ratio)                                      # Trend of XLY/XLP Ratio
     dividend_trend = getDividendTrend(dividendTail)                                     # Dividend Trend
-    eps_trend = getTrend(eps,"EPS")                                                        # EPS Trend
-    fcf_trend = getTrend(fcf_tail,"FCF")                                                   # FCF Trend
+    eps_trend = getTrend(eps,"EPS")                                                     # EPS Trend
+    fcf_trend = getTrend(fcf_tail,"FCF")                                                # FCF Trend
+    mxn_trend = getMXNTrend (USDMXN_close, USMXN_UpBand, USMXN_LowBand)                 # USD/MXN Trend
 
     # --- Return JSON ---
     return jsonify({
@@ -98,6 +102,11 @@ def stock_api(ticker):
         'vix_state': vix_state,
         'vix_trend': vix_trend,
         'dates_vix': vix_dates,
+        'dates_USDMXN': dates_USDMXN,
+        'USDMXN_close': USDMXN_close.tolist(),
+        'USMXN_UpBand': USMXN_UpBand.tolist(),
+        'USMXN_LowBand': USMXN_LowBand.tolist(),
+        'USMXN_sma50': USMXN_sma50.tolist(),
         'sma200': sma200.tolist(),
         'dates_sma200': aligned_dates.strftime('%m-%d').tolist(),
         'sma20': sma20_aligned.tolist(),
@@ -136,7 +145,8 @@ def stock_api(ticker):
         'ratio_trend': ratio_trend,
         'dividend_trend': dividend_trend,
         'eps_trend': eps_trend,
-        'fcf_trend': fcf_trend
+        'fcf_trend': fcf_trend,
+        'mxn_trend': mxn_trend
     })
 
 if __name__ == '__main__':

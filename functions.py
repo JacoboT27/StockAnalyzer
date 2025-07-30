@@ -61,6 +61,29 @@ def getVixData():
 
     return vix_close, vix_sma5, vix_dates, vix_state, vix_trend, recent_vix, vix_close_full
 
+def getUSDMXNdata():
+    ticker = yf.Ticker("MXN=X")
+    data = ticker.history(period='1y')
+    data.index = data.index.tz_convert(None)  # Standardize timezone
+    data = data['Close'].dropna()
+    window = 50  # Increased to 50 for better noise filtering
+    std_mult = 2  # Changed to 2 for standard Bollinger Bands
+    data = data[window-1:]  # Align with SMA50 length
+    USMXN_sma50 = data.rolling(window=window).mean()
+    USMXN_std50 = data.rolling(window=window).std()
+    USMXN_UpBand = USMXN_sma50 + std_mult * USMXN_std50
+    USMXN_LowBand = USMXN_sma50 - std_mult * USMXN_std50
+    data_dates = USMXN_UpBand.index.strftime('%Y-%m-%d').tolist()
+    data = data.tail(90)
+    USMXN_sma50 = USMXN_sma50.tail(90)
+    USMXN_std50 = USMXN_std50.tail(90)
+    USMXN_UpBand = USMXN_UpBand.tail(90)
+    USMXN_LowBand = USMXN_LowBand.tail(90)
+    data_dates = data_dates[-90:]  # Slice the last 90 dates
+    
+    return data, data_dates, USMXN_UpBand, USMXN_LowBand, USMXN_sma50
+
+
 def getSMA(stock,window):
     sma_hist = stock.history(period='5y')
     close_sma = sma_hist['Close'].ffill().dropna()
@@ -165,18 +188,32 @@ def getRatioTrend(ratio, sma50_ratio):
     return ratio_trend
 
 def getDividendTrend(dividendTail):
-    if dividendTail.iloc[0] > dividendTail.iloc[1]:
-        dividendTrend = 'Increase in Dividend Pay ✅'
-    elif dividendTail.iloc[0] == dividendTail.iloc[1]:
-        dividendTrend = 'No Increase in Dividend Pay ⚠️'
+    if len(dividendTail) > 0:
+        if dividendTail.iloc[0] > dividendTail.iloc[1]:
+            dividendTrend = 'Increase in Dividend Pay ✅'
+        elif dividendTail.iloc[0] == dividendTail.iloc[1]:
+            dividendTrend = 'No Increase in Dividend Pay ⚠️'
+        else:
+            dividendTrend = 'Decrease in Dividend Pay ❌'
     else:
-        dividendTrend = 'Decrease in Dividend Pay ❌'
+        dividendTrend = 'No Dividend Data ⚠️'
     return dividendTrend
 
-def getTrend(eps,text):
-        if eps[0]['amount'] > eps[1]['amount']:
+def getTrend(series,text):
+    if series == ['No EPS Data'] or series == ['No Free Cash Flow Data']:
+        trend = f'No {text} Data ⚠️'
+    else:
+        if series[0]['amount'] > series[1]['amount']:
             trend = f'{text} is growing ✅'
         else: 
             trend = f'{text} is NOT growing ❌'
-        return trend
+    return trend
 
+def getMXNTrend (USDMXN_close, USMXN_UpBand, USMXN_LowBand):
+    if USDMXN_close.iloc[-1] > USMXN_UpBand.iloc[-1]:
+        mxnTrend = 'USD Expensive'
+    elif USDMXN_close.iloc[-1] < USMXN_LowBand.iloc[-1]:
+        mxnTrend = 'USD Cheap'
+    else: 
+        mxnTrend = 'USD/MXN is Neutral'
+    return mxnTrend
