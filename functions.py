@@ -7,6 +7,7 @@ def getDividendInfo(stock):
     ex_div_date = stock.info.get('exDividendDate', None)
     dividendTail = stock.dividends.tail(5)
     payoutratio = stock.info.get("payoutRatio", None)
+    dividendTail = dividendTail[::-1]
     return dividendRate, ex_div_date, dividendTail, payoutratio
 
 def getStockInfo(ticker, period):
@@ -162,3 +163,20 @@ def getRatioTrend(ratio, sma50_ratio):
     else:
         ratio_trend = 'Risk ON Growth Market ✅'
     return ratio_trend
+
+def getDividendTrend(dividendTail):
+    if dividendTail.iloc[0] > dividendTail.iloc[1]:
+        dividendTrend = 'Increase in Dividend Pay ✅'
+    elif dividendTail.iloc[0] == dividendTail.iloc[1]:
+        dividendTrend = 'No Increase in Dividend Pay ⚠️'
+    else:
+        dividendTrend = 'Decrease in Dividend Pay ❌'
+    return dividendTrend
+
+def getTrend(eps,text):
+        if eps[0]['amount'] > eps[1]['amount']:
+            trend = f'{text} is growing ✅'
+        else: 
+            trend = f'{text} is NOT growing ❌'
+        return trend
+

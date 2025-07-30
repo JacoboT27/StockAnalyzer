@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify, request
 import yfinance as yf
 import numpy as np
 from functions import compute_rsi, getDividendInfo, getStockInfo, linearRegression, getVixData, getSMA, SMATrend, getPriceMXN, getCorrelationVIX, getEPS, getCashflow
-from functions import getTrendPosition, getRatioTrend
+from functions import getTrendPosition, getRatioTrend, getDividendTrend, getTrend
 app = Flask(__name__)
 
 @app.route('/')
@@ -75,6 +75,9 @@ def stock_api(ticker):
     trend_position = getTrendPosition(ln_close, m, x, b)                                # Trend Postion of Stock
     price_trend = SMATrend(close, sma20_aligned, sma200)                                # Price Trend Based on SMA
     ratio_trend = getRatioTrend(ratio,sma50_ratio)                                      # Trend of XLY/XLP Ratio
+    dividend_trend = getDividendTrend(dividendTail)                                     # Dividend Trend
+    eps_trend = getTrend(eps,"EPS")                                                        # EPS Trend
+    fcf_trend = getTrend(fcf_tail,"FCF")                                                   # FCF Trend
 
     # --- Return JSON ---
     return jsonify({
@@ -130,7 +133,10 @@ def stock_api(ticker):
         'freeCashflowTail': fcf_tail,
         'ln_position': trend_position,
         'price_trend': price_trend,
-        'ratio_trend': ratio_trend
+        'ratio_trend': ratio_trend,
+        'dividend_trend': dividend_trend,
+        'eps_trend': eps_trend,
+        'fcf_trend': fcf_trend
     })
 
 if __name__ == '__main__':

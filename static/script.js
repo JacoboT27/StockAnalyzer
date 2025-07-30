@@ -243,6 +243,10 @@ function updateResults(data) {
   document.getElementById("vix_state").innerText = data.vix_state;
   document.getElementById("vix_trend").innerText = data.vix_trend;
   document.getElementById("ratio_trend").innerText = data.ratio_trend;
+  document.getElementById("dividend_trend").innerText = data.dividend_trend;
+  document.getElementById("eps_trend").innerText = data.eps_trend;
+  document.getElementById("fcf_trend").innerText = data.fcf_trend;
+  
   valuation = '';
   if (data.ln_position == "Below") {
     valuation = '✅';
