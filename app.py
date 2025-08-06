@@ -14,8 +14,9 @@ def stock_api(ticker):
 
     # --- Basic Info ---
     period = request.args.get('period', '1y')                                           # 1 year is default period
-    stock, beta, hist = getStockInfo(ticker, period)                                    # Stock information
+    stock, beta, hist, name, sector, industry = getStockInfo(ticker, period)            # Stock information
     dividendRate, ex_div_date, dividendTail, payoutratio = getDividendInfo(stock)       # Dividend information
+
 
     # --- Close Data (CHART 1) ---
     close = hist['Close'].ffill()                                                       # Close data
@@ -85,6 +86,9 @@ def stock_api(ticker):
 
     # --- Return JSON ---
     return jsonify({
+        'stock_name': name,
+        'sector': sector,
+        'industry': industry,
         'beta': beta,
         'cagr': round(cagr * 100, 2),
         'correlation': correlation,

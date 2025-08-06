@@ -100,6 +100,9 @@ function updateDividends(data, ticker) {
 }
 
 function updateCharts(data, ticker) {
+  document.getElementById("stock-name").innerText = data.stock_name;
+  document.getElementById("sector").innerText = data.sector !== 'N/A' ? data.sector : "No Sector";
+  document.getElementById("industry").innerText = data.industry !== 'N/A' ? data.industry : "No Industry";
   // chart1 - close price
   const ctx1 = document.getElementById("chart1").getContext("2d");
   if (chart1) chart1.destroy();

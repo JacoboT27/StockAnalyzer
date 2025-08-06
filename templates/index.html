@@ -8,7 +8,6 @@
 </head>
 <body>
   <h1>Stock Analyzer</h1>
-
   <div class="input-container">
     <label>Stock:
       <input type="text" id="ticker" placeholder="AAPL" />
@@ -19,6 +18,12 @@
     <button onclick="fetchAll()">Fetch</button>
   </div>
 
+  <div class="title">
+    <h1 id="stock-name"></h1>
+    <h2 id="sector"></h2>
+    <h2 id="industry"></h2>
+  </div>
+  
   <div class="grid-container">
     <div class="chart-box">
         <p>Stock Price History</p>

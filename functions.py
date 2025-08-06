@@ -14,7 +14,10 @@ def getStockInfo(ticker, period):
     stock = yf.Ticker(ticker)
     beta = stock.info.get("beta", "N/A")
     hist = stock.history(period=period)
-    return stock, beta, hist
+    name = stock.info.get("longName", f"{ticker}")
+    sector = stock.info.get("sector", "N/A")
+    industry = stock.info.get("industry", "N/A")
+    return stock, beta, hist, name, sector, industry
 
 def linearRegression(ln_close):
     x = np.arange(len(ln_close))                                                       

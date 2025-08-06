@@ -11,6 +11,16 @@ h1 {
   margin: 0px;
 }
 
+.title {
+  text-align: left;
+}
+
+.title h2 {
+  color: #545454;
+  text-align: left;
+  
+}
+
 label {
   color: #ececec ;
 }
