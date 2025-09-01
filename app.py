@@ -14,7 +14,7 @@ def stock_api(ticker):
 
     # --- Basic Info ---
     period = request.args.get('period', '1y')                                           # 1 year is default period
-    stock, beta, hist, name, sector, industry = getStockInfo(ticker, period)            # Stock information
+    stock, beta, hist, name, sector, industry, market = getStockInfo(ticker, period)            # Stock information
     dividendRate, ex_div_date, dividendTail, payoutratio = getDividendInfo(stock)       # Dividend information
 
 
@@ -89,6 +89,7 @@ def stock_api(ticker):
         'stock_name': name,
         'sector': sector,
         'industry': industry,
+        'market' : market,
         'beta': beta,
         'cagr': round(cagr * 100, 2),
         'correlation': correlation,
