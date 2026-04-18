@@ -13,7 +13,7 @@ This is a simple stock dashboard web application built with **Flask (Python)** o
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - **Backend:** Python + Flask + yfinance
 - **Frontend:** HTML, CSS, JavaScript (Chart.js)
@@ -23,11 +23,22 @@ This is a simple stock dashboard web application built with **Flask (Python)** o
 
 ## Installation
 
-On the command terminal 
+On the command terminal run this command to clone the repository:
 
 ```bash
-git clone 
+git clone https://github.com/JacoboT27/StockAnalyzer.git
+```
+Open the Stock Analyzer directory then run the following command to set up your virtual environment:
+
+```bash
+ pip install -r requirements. txt 
+ ```
+
+To start the application run on the terminal:
+```python
+python app.py
 ```
 
+Then you should see a  `* Running on http://127.0.0.1:5000` message. `Ctrl + click` on the link to open the app.
 
-
+On the app, fill the input fields with the stock ticker, and the time frame you want to analyze (e.g. NVDA, 2y).
